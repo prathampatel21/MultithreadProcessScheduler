@@ -1,0 +1,51 @@
+CS 2200 Project 4
+
+Name: Pratham Patel
+GTID: 903878234
+GT_Email: ppatel686@gatech.edu
+Section: 
+
+==============================================
+
+___________________________
+Problem-1 (FCFS Scheduler)
+---------------------------
+No, there is not a perfectly linear relationship between the number of CPUs and total execution time in the FIFO scheduler. 
+While adding more CPUs can reduce total execution time by allowing more parallelism, the degree of improvement depends on 
+the workload. If processes are largely I/O bound or unevenly distributed in length, some CPUs may stay idle while others are busy. Moreover, 
+with FIFO, once a long process is scheduled, it runs to completion — meaning additional CPUs don’t help if one is monopolized by a long-running job. T
+herefore, you’ll likely see diminishing returns rather than a linear speedup.
+
+
+________________________
+Problem-2 (Round-Robin)
+------------------------
+Yes, there is a relationship. As the timeslice decreases, context switching becomes more frequent, which leads to lower 
+waiting time per process, since each process gets scheduled more often, but increased overhead due to more context 
+switches. In the simulation, total waiting time seems to decrease with shorter timeslices because processes don’t have 
+to wait as long to be scheduled again. However, in a real OS, the shortest timeslice isn't always best since each context
+switch involves saving/restoring registers, flushing pipelines, cache invalidations, etc.Also, a too short a timeslice 
+means CPU spends more time switching than doing useful work. It can degrade cache performance and reduce throughput. So,
+real systems aim for a balanced timeslice that minimizes waiting time without incurring excessive overhead.
+
+
+________________________________
+Problem-3 (Preemptive Priority)
+--------------------------------
+Starvation can be mitigated using priority aging, which gradually increases the priority of a waiting process the longer
+it stays in the ready queue. This ensures that even low-priority processes eventually get scheduled. The formula is:
+
+effective_priority = base_priority - (current_time - enqueue_time) * age_weight
+
+Over time, even low-priority processes will have sufficiently high effective priority to preempt others and run.
+
+
+___________________________________________
+Problem-4 (The Priority Inversion Problem)
+-------------------------------------------
+The solution is priority inheritance. When a low-priority process (like the window manager) is holding a resource that 
+a high-priority process (P1) needs, the scheduler should temporarily boost the low-priority process’s priority to match 
+that of the highest waiting process. We would implement this by trakcing resource ownership, like when a high-priority
+process is blocked on a lower priority process, then record the deppendency. Then, elevate the low-priority to the 
+highest of any blocked dependent processes. Once its released or resolved, restore original priority. This will
+allow low priority task to go ahead of any medium priority task so that high priority task can go next.
